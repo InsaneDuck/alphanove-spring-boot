@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -52,12 +53,27 @@ public class Auth {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLogin.getUsername(), userLogin.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String token = jwtGenerator.generateToken(authentication, UserType.ROLE_ADMIN.toString());
+            String token = jwtGenerator.generateToken(authentication, getHighestRole(role.get()));
             if (user.isPresent()) {
-                return new ResponseEntity<>(UserDetails.userToUserDetails(user.get()), HttpStatus.OK);
+                return new ResponseEntity<>(UserDetails.userToUserDetails(user.get(), token), HttpStatus.OK);
             }
         }
 
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    String getHighestRole(List<Role> roles) {
+        for (Role role : roles) {
+            String r = role.getRole();
+
+            if (Objects.equals(r, UserType.ROLE_ADMIN.toString())) {
+                return UserType.ROLE_ADMIN.toString();
+            } else if (Objects.equals(r, UserType.ROLE_SUPPLIER.toString())) {
+                return UserType.ROLE_CONSUMER.toString();
+            } else if (Objects.equals(r, UserType.ROLE_CONSUMER.toString())) {
+                return UserType.ROLE_CONSUMER.toString();
+            }
+        }
+        return null;
     }
 }

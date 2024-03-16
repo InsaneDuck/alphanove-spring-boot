@@ -53,7 +53,7 @@ public class JwtGenerator {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(jwsToken);
             return true;
         } catch (Exception e) {
-            throw new AuthenticationCredentialsNotFoundException("JWT token is valid");
+            throw new AuthenticationCredentialsNotFoundException("JWT token is invalid");
         }
     }
 }

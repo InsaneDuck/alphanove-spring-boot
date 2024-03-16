@@ -16,8 +16,9 @@ public class UserDetails implements Serializable {
     Boolean enabled;
     String firstName;
     String lastName;
+    String token;
 
-    public static UserDetails userToUserDetails(User user) {
-        return new UserDetails(user.getId(), user.getUsername(), user.getEmail(), user.getEnabled(), user.getFirstName(), user.getLastName());
+    public static UserDetails userToUserDetails(User user, String token) {
+        return new UserDetails(user.getId(), user.getUsername(), user.getEmail(), user.getEnabled(), user.getFirstName(), user.getLastName(), token);
     }
 }
