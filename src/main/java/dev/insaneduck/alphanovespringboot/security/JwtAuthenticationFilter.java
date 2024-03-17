@@ -1,6 +1,7 @@
 package dev.insaneduck.alphanovespringboot.security;
 
 import dev.insaneduck.alphanovespringboot.entities.UserType;
+import dev.insaneduck.alphanovespringboot.services.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

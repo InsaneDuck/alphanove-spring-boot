@@ -1,4 +1,4 @@
-package dev.insaneduck.alphanovespringboot.security;
+package dev.insaneduck.alphanovespringboot.services;
 
 import dev.insaneduck.alphanovespringboot.entities.Role;
 import dev.insaneduck.alphanovespringboot.entities.User;

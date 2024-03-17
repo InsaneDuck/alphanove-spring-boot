@@ -2,13 +2,15 @@ package dev.insaneduck.alphanovespringboot.controllers;
 
 import dev.insaneduck.alphanovespringboot.dto.UserDetails;
 import dev.insaneduck.alphanovespringboot.dto.UserLogin;
+import dev.insaneduck.alphanovespringboot.dto.UserSignUp;
+import dev.insaneduck.alphanovespringboot.dto.UserSignUpResponse;
 import dev.insaneduck.alphanovespringboot.entities.Role;
 import dev.insaneduck.alphanovespringboot.entities.User;
 import dev.insaneduck.alphanovespringboot.entities.UserType;
 import dev.insaneduck.alphanovespringboot.repositories.RoleRepository;
 import dev.insaneduck.alphanovespringboot.repositories.UserRepository;
-import dev.insaneduck.alphanovespringboot.security.CustomUserDetailsService;
 import dev.insaneduck.alphanovespringboot.security.JwtGenerator;
+import dev.insaneduck.alphanovespringboot.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/auth")
 public class Auth {
 
     @Autowired
@@ -45,7 +47,7 @@ public class Auth {
     private RoleRepository roleRepository;
 
 
-    @PostMapping("auth")
+    @PostMapping("/login")
     public ResponseEntity<UserDetails> login(@RequestBody UserLogin userLogin) {
         if (userRepository.existsUserByUsername(userLogin.getUsername())) {
             Optional<User> user = userRepository.findUserByUsername(userLogin.getUsername());
@@ -59,7 +61,30 @@ public class Auth {
             }
         }
 
+
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserSignUpResponse> register(@RequestBody UserSignUp userSignUp) {
+        if (userRepository.existsUserByUsername(userSignUp.getUserName()) && userRepository.existsUserByEmail(userSignUp.getEmail())) {
+            return new ResponseEntity<>(new UserSignUpResponse(false, true, true, "user with username and email already exists"), HttpStatus.CONFLICT);
+        } else if (userRepository.existsUserByEmail(userSignUp.getEmail())) {
+            return new ResponseEntity<>(new UserSignUpResponse(false, false, true, "user email already exists"), HttpStatus.CONFLICT);
+        } else if (userRepository.existsUserByUsername(userSignUp.getUserName())) {
+            return new ResponseEntity<>(new UserSignUpResponse(false, true, false, "user with username already exists"), HttpStatus.CONFLICT);
+
+        }
+        User user = new User();
+        user.setEmail(userSignUp.getEmail());
+        user.setUsername(userSignUp.getUserName());
+        user.setPassword(passwordEncoder.encode(userSignUp.getPassword()));
+        user.setFirstName(userSignUp.getFirstName());
+        user.setLastName(userSignUp.getLastName());
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        return null;
     }
 
     String getHighestRole(List<Role> roles) {

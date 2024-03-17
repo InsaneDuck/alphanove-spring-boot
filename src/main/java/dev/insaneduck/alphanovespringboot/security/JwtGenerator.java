@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Component
 public class JwtGenerator {
-
+    public static final long JWT_EXPIRATION = 1000000000;
     public static final String USER_TYPE = "usertype";
     //todo fix token
     SecretKey key = Jwts.SIG.HS256.key().build();
@@ -20,7 +20,7 @@ public class JwtGenerator {
     public String generateToken(Authentication authentication, String userType) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expriryDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
+        Date expriryDate = new Date(currentDate.getTime() + JWT_EXPIRATION);
 
 
         return Jwts.builder()
