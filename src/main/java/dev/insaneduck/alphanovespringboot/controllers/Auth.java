@@ -84,7 +84,12 @@ public class Auth {
         user.setEnabled(true);
         userRepository.save(user);
 
-        return null;
+        Role role = new Role();
+        role.setRole("ROLE_ADMIN");
+        role.setUsername(user);
+        roleRepository.save(role);
+
+        return new ResponseEntity<>(new UserSignUpResponse(true, false, false, "user sign up successful"), HttpStatus.OK);
     }
 
     String getHighestRole(List<Role> roles) {
